@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Búsqueda</title>
+</head>
+<body>
+    <h1>Búsqueda</h1>
+    <form action="/search" method="GET">
+        <input type="text" name="q" placeholder="Buscar...">
+        <button type="submit">Buscar</button>
+    </form>
+    <% if (searchTerm) { %>
+        <h2>Resultados para: <%- searchTerm %></h2>
+    <% } %>
+    <a href="/">Volver</a>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "vulnerable-node-sast-project",
+  "version": "1.0.0",
+  "description": "Un proyecto Node.js con vulnerabilidades SAST para fines educativos",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.8",
+    "express": "^4.18.2"
+  }
+}
