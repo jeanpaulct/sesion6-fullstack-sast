@@ -1,5 +1,8 @@
 const express = require('express');
 const { exec } = require('child_process');
+
+const { execFile } = require('child_process');
+
 const path = require('path');
 const fs = require('fs');
 
@@ -24,7 +27,9 @@ app.get('/network', (req, res) => {
 app.post('/network/ping', (req, res) => {
     const host = req.body.host;
     // VULNERABILIDAD: El input del usuario se concatena directamente en un comando del sistema.
-    exec(`ping -c 1 ${host}`, (error, stdout, stderr) => {
+    // CORRECCIÓN: Usamos execFile para pasar el input como un argumento seguro.
+    // El comando 'ping' y sus argumentos ['-c', '1', host] se mantienen separados.
+    execFile('ping', ['-c', '1', host], (error, stdout, stderr) => {
         res.render('network', { output: stdout || stderr });
     });
 });
@@ -40,6 +45,7 @@ app.get('/logs', (req, res) => {
     
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
+            console.log(err);
             return res.status(500).send('Error al leer el archivo.');
         }
         res.type('text/plain').send(data);
