@@ -40,13 +40,23 @@ app.get('/logs', (req, res) => {
     if (!filename) {
         return res.status(400).send('Por favor, especifique un archivo con el parámetro ?file=');
     }
-    // VULNERABILIDAD: El input del usuario se usa para construir una ruta de archivo sin validación.
-    const filePath = path.join(__dirname, 'logs', filename);
+
+    // CORRECCIÓN: Usamos path.basename() para eliminar cualquier intento de traversal.
+    // Si filename es '../../package.json', basename será 'package.json'.
+    const secureFilename = path.basename(filename);
+
+    const logsDir = path.join(__dirname, 'logs');
+    const filePath = path.join(logsDir, secureFilename);
     
+    // Doble chequeo: Nos aseguramos que la ruta final aún está dentro del directorio de logs.
+    if (filePath.indexOf(logsDir) !== 0) {
+        return res.status(400).send('Intento de acceso a archivo no válido.');
+    }
+
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
-            console.log(err);
-            return res.status(500).send('Error al leer el archivo.');
+            // Se devuelve un error genérico para no filtrar si un archivo existe o no.
+            return res.status(404).send('Archivo no encontrado o no se pudo leer.');
         }
         res.type('text/plain').send(data);
     });
